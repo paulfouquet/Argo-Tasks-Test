@@ -107,6 +107,7 @@ export const commandTileIndexValidate = command({
       description: 'Validate that all input tiffs perfectly align to tile grid',
       defaultValueIsSerializable: true,
     }),
+    output: option({ type: optional(string), long: 'output', description: 'Output location for the listing' }),
     forceOutput,
     location: restPositionals({ type: string, displayName: 'location', description: 'Location of the source files' }),
   },
@@ -169,8 +170,10 @@ export const commandTileIndexValidate = command({
           });
         }),
       });
+      let fileListPath = '/tmp/tile-index-validate';
+      if (args.output) fileListPath = args.output;
       await fsa.write(
-        '/tmp/tile-index-validate/file-list.json',
+        fileListPath + '/file-list.json',
         [...outputs.values()].map((locs) => {
           return { output: locs[0]?.tileName, input: locs.map((l) => l.source) };
         }),
