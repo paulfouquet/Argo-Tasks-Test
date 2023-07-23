@@ -74,7 +74,7 @@ export const commandGroup = command({
     logger.info({ files: inputs.length, groups: grouped.length }, 'Group:Done');
     if (args.forceOutput || isArgo()) {
       await fsa.write('/tmp/group/output.json', JSON.stringify(grouped));
-      await fsa.write('/tmp/group/count', grouped.length);
+      await fsa.write('/tmp/group/count', grouped.length.toString());
     }
   },
 });
