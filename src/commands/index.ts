@@ -11,6 +11,7 @@ import { commandStacGithubImport } from './stac-github-import/stac.github.import
 import { commandGroup } from './group/group.js';
 import { CliInfo } from '../cli.info.js';
 import { basemapsCreatePullRequest } from './basemaps-github/create-pr.js';
+import { commandPrettier } from './format/prettier.js';
 
 export const cmd = subcommands({
   name: 'argo-tasks',
@@ -44,5 +45,6 @@ export const cmd = subcommands({
         'create-pr': basemapsCreatePullRequest,
       },
     }),
+    prettier: commandPrettier,
   },
 });
