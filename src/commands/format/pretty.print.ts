@@ -12,6 +12,15 @@ function isJson(x: string): boolean {
   return search.endsWith('.json');
 }
 
+export const defaultPrettierFormat: prettier.Options = {
+  semi: true,
+  trailingComma: 'all',
+  singleQuote: true,
+  printWidth: 120,
+  useTabs: false,
+  tabWidth: 2,
+};
+
 export const commandPrettier = command({
   name: 'prettier',
   description: 'Format JSON files using Prettier',
@@ -36,29 +45,18 @@ export const commandPrettier = command({
     if (jsonFiles.length === 0) throw new Error('No Files found');
     // test if can access on of the file
     if (jsonFiles[0]) await fsa.head(jsonFiles[0]);
-    const formattedContent = await Promise.all(
-      jsonFiles.map((f: string) => formatFile(f)),
+    await Promise.all(
+      jsonFiles.map((f: string) => formatFile(f, args.target)),
     );
-    // TODO: remove debug
-    formattedContent.forEach((f: string) => console.log(f))
   },
 });
 
-async function formatFile(path: string, target: string = ""): Promise<string> {
-  // get prettier config from linzjs/style
-  const cfg = await prettier.resolveConfigFile('@linzjs/style/.prettierrc.cjs');
-  if (cfg == null) {
-    throw new Error('Missing Prettier config');
-  }
+async function formatFile(path: string, target: string = ""): Promise<void> {
   logger.info({ file: path }, 'Prettier:Format');
-  const options = await prettier.resolveConfig(cfg);
-  const formatted = await prettier.format(JSON.stringify(await fsa.readJson(path)), { ...options, parser: 'json' });
-  console.log(formatted);
+  const formatted = await prettier.format(JSON.stringify(await fsa.readJson(path)), { ...defaultPrettierFormat, parser: 'json' });
   if (target){
     // FIXME: can be duplicate files
     path = fsa.join(target, basename(path));
   }
   fsa.write(path, Buffer.from(formatted));
-  // TODO: remove debug
-  return formatted;
 }
