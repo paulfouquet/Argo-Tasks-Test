@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/paulfouquet/argo-tasks-test/compare/v4.0.0...v4.1.0) (2024-02-15)
+
+
+### Features
+
+* ci avoid aws in dev ([c7cb730](https://github.com/paulfouquet/argo-tasks-test/commit/c7cb73062e9dd395dbb0bdb5fa37a6fc9362e161))
+
 ## [4.0.0](https://github.com/paulfouquet/argo-tasks-test/compare/v3.0.0...v4.0.0) (2024-02-14)
 
 
