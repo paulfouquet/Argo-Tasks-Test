@@ -4,7 +4,6 @@ import * as st from 'stac-ts';
 
 import { CliInfo } from '../../cli.info.js';
 import { logger } from '../../log.js';
-import { DEFAULT_PRETTIER_FORMAT } from '../../utils/config.js';
 import { createPR, GithubApi } from '../../utils/github.js';
 import { config, registerCli, verbose } from '../common.js';
 import { prettyPrint } from '../format/pretty.print.js';
@@ -87,7 +86,7 @@ export const commandStacGithubImport = command({
     const branch = `feat/bot-${collection.id}`;
     // commit and pull request title: "feat: import Manawatū-Whanganui 0.4m Rural Aerial Photos (2010-2011)"
     const title = `feat: import ${collection.title}`;
-    const collectionFileContent = await prettyPrint(JSON.stringify(collection), DEFAULT_PRETTIER_FORMAT);
+    const collectionFileContent = await prettyPrint(JSON.stringify(collection));
     const collectionFile = { path: targetCollectionPath, content: collectionFileContent };
     logger.info({ commit: `feat: import ${collection.title}`, branch: `feat/bot-${collection.id}` }, 'Git:Commit');
     // create pull request

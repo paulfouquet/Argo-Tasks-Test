@@ -9,6 +9,7 @@ import { commandPrettyPrint } from './format/pretty.print.js';
 import { commandGroup } from './group/group.js';
 import { commandLdsFetch } from './lds-cache/lds.cache.js';
 import { commandList } from './list/list.js';
+import { commandMergeJson } from './merge/merge.json.js';
 import { commandGeneratePath } from './path/path.generate.js';
 import { commandStacCatalog } from './stac-catalog/stac.catalog.js';
 import { commandStacGithubImport } from './stac-github-import/stac.github.import.js';
@@ -28,6 +29,7 @@ export const cmd = subcommands({
     'lds-fetch-layer': commandLdsFetch,
     list: commandList,
     ls: commandList,
+    'merge-json': commandMergeJson,
     'stac-catalog': commandStacCatalog,
     'stac-github-import': commandStacGithubImport,
     'stac-sync': commandStacSync,
