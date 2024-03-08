@@ -58,7 +58,7 @@ export const commandPrettyPrint = command({
  */
 export async function formatFile(path: string, target = ''): Promise<void> {
   logger.debug({ file: path }, 'PrettyPrint:RunPrettier');
-  const prettyPrinted = await prettyPrint(JSON.stringify(await fsa.readJson(path)), DEFAULT_PRETTIER_FORMAT);
+  const prettyPrinted = await prettyPrint(JSON.stringify(await fsa.readJson(path)));
   if (target) {
     // FIXME: can be duplicate files
     path = fsa.join(target, basename(path));
@@ -74,7 +74,10 @@ export async function formatFile(path: string, target = ''): Promise<void> {
  * @param config a Prettier configuration
  * @returns the stringify JSON pretty printed
  */
-export async function prettyPrint(jsonStr: string, config: prettier.Options): Promise<string> {
+export async function prettyPrint(
+  jsonStr: string,
+  config: prettier.Options = DEFAULT_PRETTIER_FORMAT,
+): Promise<string> {
   return await prettier.format(jsonStr, {
     ...config,
     parser: 'json',
