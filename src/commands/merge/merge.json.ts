@@ -30,7 +30,10 @@ export const commandMergeJson = command({
     logger.info('MergeJson:Start');
     const files = await getFiles(args.location, args);
     const jsonFiles = files.flat().filter(isJson);
-    if (jsonFiles.length === 0) throw new Error('No Files found');
+    if (jsonFiles.length === 0) {
+      logger.info('MergeJson:NoFileFound');
+      return;
+    }
     // test if can access one of the file
     if (jsonFiles[0]) await fsa.head(jsonFiles[0]);
 
