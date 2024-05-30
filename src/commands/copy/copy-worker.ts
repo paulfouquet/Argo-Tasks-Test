@@ -7,9 +7,11 @@ import { WorkerRpc } from '@wtrpc/core';
 
 import { baseLogger } from '../../log.js';
 import { ConcurrentQueue } from '../../utils/concurrent.queue.js';
+import { HashKey } from '../../utils/hash.js';
 import { registerCli } from '../common.js';
 import { isTiff } from '../tileindex-validate/tileindex.validate.js';
 import { CopyContract, CopyContractArgs, CopyStats } from './copy-rpc.js';
+import { HashTransform } from './hash.stream.js';
 
 const Q = new ConcurrentQueue(10);
 
@@ -69,12 +71,17 @@ export const worker = new WorkerRpc<CopyContract>({
         const [source, target] = await Promise.all([fsa.head(todo.source), fsa.head(todo.target)]);
         if (source == null) return;
         if (source.size == null) return;
+        let sourceStream;
         if (target != null) {
           if (source?.size === target.size && args.noClobber) {
-            log.info({ path: todo.target, size: target.size }, 'File:Copy:Skipped');
-            stats.skipped++;
-            stats.skippedBytes += source.size;
-            return;
+            const targetStream = fsa.stream(todo.target).pipe(new HashTransform('sha256'));
+            sourceStream = fsa.stream(todo.source).pipe(new HashTransform('sha256'));
+            if (targetStream.multihash === sourceStream.multihash) {
+              log.info({ path: todo.target, size: target.size }, 'File:Copy:Skipped');
+              stats.skipped++;
+              stats.skippedBytes += source.size;
+              return;
+            }
           }
 
           if (!args.force) {
@@ -85,11 +92,19 @@ export const worker = new WorkerRpc<CopyContract>({
 
         log.trace(todo, 'File:Copy:start');
         const startTime = performance.now();
-        await fsa.write(
-          todo.target,
-          fsa.stream(todo.source),
-          args.fixContentType ? fixFileMetadata(todo.source, source) : source,
-        );
+        if (!sourceStream) {
+          sourceStream = fsa.stream(todo.source).pipe(new HashTransform('sha256'));
+        }
+
+        if (source.metadata) {
+          if (source.metadata[HashKey] !== sourceStream.multihash) {
+            source.metadata[HashKey] = sourceStream.multihash;
+          }
+        } else {
+          source.metadata = { [HashKey]: sourceStream.multihash };
+        }
+
+        await fsa.write(todo.target, sourceStream, args.fixContentType ? fixFileMetadata(todo.source, source) : source);
 
         // Validate the file moved successfully
         const targetSize = await tryHead(todo.target);
