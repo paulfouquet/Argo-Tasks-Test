@@ -5,7 +5,8 @@ import { fsa } from '@chunkd/fs';
 import { FsMemory } from '@chunkd/source-memory';
 import { createHash } from 'crypto';
 
-import { HashKey, synchroniseFiles } from '../stac.sync.js';
+import { HashKey } from '../../../utils/hash.js';
+import { synchroniseFiles } from '../stac.sync.js';
 
 describe('stacSync', () => {
   const fs = new FsMemory();
