@@ -1,5 +1,8 @@
 name: Build
-on: [push]
+on: 
+  push:
+  label:
+    types: [created, deleted]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,7 +33,7 @@ jobs:
     needs: ['build']
 
     # On push to master when it is not a release!
-    if: ${{ github.ref == 'refs/heads/master' && !startsWith(github.event.head_commit.message, 'release:') }}
+    if: ${{ github.ref == 'refs/heads/master' && !startsWith(github.event.head_commit.message, 'release:') || github.event.label.name == 'container' }}
 
     permissions:
       id-token: write
